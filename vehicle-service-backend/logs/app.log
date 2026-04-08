@@ -1,0 +1,6 @@
+[2026-04-07 20:25:16] INFO: Register attempt started for email: john@example.com
+[2026-04-07 20:25:16] WARN: Register failed — email already exists: john@example.com
+[2026-04-07 20:25:30] INFO: Register attempt started for email: john@example1.com
+[2026-04-07 20:25:30] INFO: New customer registered successfully — user_id: 3
+[2026-04-07 21:08:36] INFO: Login successful — user_id: 2, email: john@example.com
+[2026-04-07 21:16:20] WARN: Auth failed — no token in cookies | GET /api/auth/profile
