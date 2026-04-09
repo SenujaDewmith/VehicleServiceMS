@@ -4,3 +4,12 @@
 [2026-04-07 20:25:30] INFO: New customer registered successfully — user_id: 3
 [2026-04-07 21:08:36] INFO: Login successful — user_id: 2, email: john@example.com
 [2026-04-07 21:16:20] WARN: Auth failed — no token in cookies | GET /api/auth/profile
+[2026-04-09 08:42:52] INFO: Login successful — user_id: 2, email: john@example.com
+[2026-04-09 09:29:51] WARN: Auth failed — no token in cookies | GET /api/auth/profile
+[2026-04-09 09:30:16] INFO: Register attempt started for email: john@example.com
+[2026-04-09 09:30:16] WARN: Register failed — email already exists: john@example.com
+[2026-04-09 09:30:28] INFO: Login successful — user_id: 2, email: john@example.com
+[2026-04-09 09:30:36] WARN: Auth failed — no token in cookies | GET /api/auth/profile
+[2026-04-09 09:39:44] INFO: Login successful — user_id: 2, email: john@example.com
+[2026-04-09 09:39:53] WARN: Auth failed — no token in cookies | GET /api/auth/profile
+[2026-04-09 09:40:26] WARN: Auth failed — no token in cookies | GET /api/auth/profile

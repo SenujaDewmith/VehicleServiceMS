@@ -2,6 +2,14 @@ const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger"); // adjust path if needed
 require("dotenv").config();
 
+const ROLE_MAP = {
+  "Service Center Manager": 1,
+  Supervisor: 2,
+  Cashier: 3,
+  "Service Staff": 4,
+  Customer: 5,
+};
+
 const verifyToken = (req, res, next) => {
   // Token comes from HttpOnly cookie — not the Authorization header
   const token = req.cookies?.token;
@@ -34,4 +42,21 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-module.exports = { verifyToken };
+const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    const userRoleId = req.user?.role_id;
+    const allowedRoleIds = allowedRoles.map((name) => ROLE_MAP[name]);
+
+    if (!allowedRoleIds.includes(userRoleId)) {
+      logger.warn(
+        `Authorization failed — role_id ${userRoleId} not in [${allowedRoleIds}] | ${req.method} ${req.originalUrl}`,
+      );
+      return res
+        .status(403)
+        .json({ message: "Access denied. Insufficient permissions." });
+    }
+    next();
+  };
+};
+
+module.exports = { verifyToken, authorizeRoles };

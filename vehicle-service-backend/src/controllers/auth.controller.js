@@ -145,7 +145,7 @@ const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // relaxed for dev
       maxAge: 24 * 60 * 60 * 1000, // 1 day in ms
     });
 
@@ -172,13 +172,48 @@ const login = async (req, res) => {
 
 // GET PROFILE (protected route example)
 const getProfile = async (req, res) => {
+  const { user_id, role_id } = req.user; // decoded from JWT
+
+  // Role IDs based on your seeded data
+  const CUSTOMER_ROLE_ID = 5;
+
   try {
-    const result = await pool.query(
-      "SELECT id, name, email, role, created_at FROM users WHERE id = $1",
-      [req.user.id],
+    // Fetch base user info
+    const userResult = await pool.query(
+      `SELECT user_id, email, role_id, account_status, created_at
+       FROM users WHERE user_id = $1`,
+      [user_id],
     );
-    res.status(200).json({ user: result.rows[0] });
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+
+    // Fetch profile from the correct table
+    let profile = null;
+
+    if (role_id === CUSTOMER_ROLE_ID) {
+      const customerResult = await pool.query(
+        `SELECT full_name, phone, address FROM customers WHERE user_id = $1`,
+        [user_id],
+      );
+      profile = customerResult.rows[0] || null;
+    } else {
+      // All staff roles (Manager, Supervisor, Cashier, Service Staff)
+      const staffResult = await pool.query(
+        `SELECT full_name, phone_no FROM staff WHERE user_id = $1`,
+        [user_id],
+      );
+      profile = staffResult.rows[0] || null;
+    }
+
+    res.status(200).json({ user, profile });
   } catch (error) {
+    logger.error(
+      `getProfile failed for user_id: ${user_id} — ${error.message}`,
+    );
     res.status(500).json({ message: "Server error" });
   }
 };

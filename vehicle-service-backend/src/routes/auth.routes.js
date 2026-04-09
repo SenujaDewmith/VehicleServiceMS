@@ -129,18 +129,115 @@ router.post("/login", login);
  * @swagger
  * /api/auth/profile:
  *   get:
- *     summary: Get logged-in user profile (protected)
+ *     summary: Get the authenticated user's profile
+ *     description: >
+ *       Returns base user info plus a role-specific profile.
+ *       - If the user is a **Customer** (role_id: 5), returns data from the `customers` table (full_name, phone, address).
+ *       - If the user is **Staff** (Manager, Supervisor, Cashier, Service Staff), returns data from the `staff` table (full_name, phone_no).
+ *       Requires a valid JWT stored in an HttpOnly cookie.
  *     tags: [Auth]
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Returns user profile
+ *         description: Authenticated user's profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   description: Base account information
+ *                   properties:
+ *                     user_id:
+ *                       type: integer
+ *                       example: 3
+ *                     email:
+ *                       type: string
+ *                       example: john@example.com
+ *                     role_id:
+ *                       type: integer
+ *                       example: 5
+ *                     account_status:
+ *                       type: string
+ *                       example: active
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2025-01-01T10:00:00.000Z"
+ *                 profile:
+ *                   oneOf:
+ *                     - $ref: '#/components/schemas/CustomerProfile'
+ *                     - $ref: '#/components/schemas/StaffProfile'
+ *                   description: Role-specific profile. Shape depends on the user's role.
+ *             examples:
+ *               customer:
+ *                 summary: Customer profile response
+ *                 value:
+ *                   user:
+ *                     user_id: 3
+ *                     email: john@example.com
+ *                     role_id: 5
+ *                     account_status: active
+ *                     created_at: "2025-01-01T10:00:00.000Z"
+ *                   profile:
+ *                     full_name: John Doe
+ *                     phone: "+94771234567"
+ *                     address: "42 Main Street, Colombo"
+ *               staff:
+ *                 summary: Staff profile response
+ *                 value:
+ *                   user:
+ *                     user_id: 7
+ *                     email: manager@workshop.com
+ *                     role_id: 1
+ *                     account_status: active
+ *                     created_at: "2025-01-01T10:00:00.000Z"
+ *                   profile:
+ *                     full_name: Sarah Perera
+ *                     phone_no: "+94712345678"
  *       401:
- *         description: No token provided
+ *         description: Not authenticated — missing or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       403:
  *         description: Invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/profile", verifyToken, getProfile);
 
 module.exports = router;
+
+// // Staff-only example route
+// router.get(
+//   '/staff/dashboard',
+//   verifyToken,
+//   authorizeRoles('Service Center Manager', 'Supervisor', 'Cashier', 'Service Staff'),
+//   (req, res) => res.json({ message: 'Welcome, staff!' })
+// );
+
+// // Customer-only example route
+// router.get(
+//   '/customer/bookings',
+//   verifyToken,
+//   authorizeRoles('Customer'),
+//   (req, res) => res.json({ message: 'Your bookings here' })
+// );
