@@ -1,0 +1,42 @@
+# ========================
+# Dependencies
+# ========================
+node_modules/
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.local
+.env.*.local
+
+# ========================
+# Logs — keep the folder, ignore the files inside
+# ========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========================
+# Runtime & OS
+# ========================
+.DS_Store
+Thumbs.db
+*.pid
+*.seed
+*.pid.lock
+
+# ========================
+# Coverage & Build
+# ========================
+coverage/
+dist/
+build/
+
+# ========================
+# IDE
+# ========================
+.vscode/
+.idea/

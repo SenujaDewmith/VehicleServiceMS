@@ -13,3 +13,4 @@
 [2026-04-09 09:39:44] INFO: Login successful — user_id: 2, email: john@example.com
 [2026-04-09 09:39:53] WARN: Auth failed — no token in cookies | GET /api/auth/profile
 [2026-04-09 09:40:26] WARN: Auth failed — no token in cookies | GET /api/auth/profile
+[2026-04-09 09:44:52] INFO: Login successful — user_id: 2, email: john@example.com
