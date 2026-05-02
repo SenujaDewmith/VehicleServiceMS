@@ -9,7 +9,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // must be explicit, NOT "*"
+    origin: "http://localhost:8080", // must be explicit, NOT "*"
     credentials: true, // must be true
   }),
 );
